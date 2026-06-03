@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical DLS - Catálogo de Insumos Médicos y Quirúrgicos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #c41e3a;
+            --secondary: #1a3a52;
+            --accent: #ff6b6b;
+            --light-bg: #f8f9fa;
+            --dark-text: #1a1a1a;
+            --border: #e0e0e0;
+            --success: #27ae60;
+            --spacing: 16px;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark-text);
+            background-color: #ffffff;
+        }
+
+        /* HEADER */
+        header {
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
+            color: white;
+            padding: 30px var(--spacing);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 20px;
+        }
+
+        .search-container {
+            flex: 1;
+            min-width: 250px;
+            max-width: 400px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            background: rgba(255,255,255,0.95);
+            color: var(--dark-text);
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px var(--accent);
+            transform: scale(1.02);
+        }
+
+        .header-info {
+            display: flex;
+            gap: 20px;
+            font-size: 13px;
+            flex-wrap: wrap;
+        }
+
+        .header-info span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* NAVEGACIÓN */
+        nav {
+            background: var(--light-bg);
+            border-bottom: 2px solid var(--primary);
+            position: sticky;
+            top: 100px;
+            z-index: 99;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            gap: 5px;
+            padding: 0 var(--spacing);
+        }
+
+        .nav-btn {
+            padding: 12px 18px;
+            background: none;
+            border: none;
+            color: var(--secondary);
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            white-space: nowrap;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .nav-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        /* MAIN CONTENT */
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px var(--spacing);
+        }
+
+        .category-section {
+            margin-bottom: 50px;
+            scroll-margin-top: 200px;
+        }
+
+        .category-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-left: 5px solid var(--primary);
+            padding-left: 15px;
+        }
+
+        .category-subtitle {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 500;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        /* PRODUCT CARD */
+        .product-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-card:hover {
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+            transform: translateY(-4px);
+            border-color: var(--primary);
+        }
+
+        .product-code {
+            font-size: 11px;
+            background: var(--light-bg);
+            color: var(--secondary);
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            font-weight: 600;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .product-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--dark-text);
+            margin-bottom: 10px;
+            line-height: 1.4;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+        }
+
+        .product-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #e8f4f8 0%, #d1e8f0 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            margin-bottom: 15px;
+            margin-left: auto;
+        }
+
+        .product-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .product-details {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.8;
+            margin-bottom: 15px;
+            padding: 12px;
+            background: var(--light-bg);
+            border-radius: 6px;
+            display: none;
+        }
+
+        .product-details.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                max-height: 0;
+            }
+            to {
+                opacity: 1;
+                max-height: 500px;
+            }
+        }
+
+        .product-detail-item {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .product-detail-label {
+            font-weight: 600;
+            color: var(--secondary);
+            min-width: 100px;
+        }
+
+        .product-detail-value {
+            color: var(--dark-text);
+        }
+
+        .toggle-btn {
+            background: none;
+            border: none;
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            padding: 8px 0;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            text-transform: uppercase;
+        }
+
+        .toggle-btn:hover {
+            color: var(--accent);
+        }
+
+        .arrow {
+            display: inline-block;
+            transition: transform 0.3s ease;
+        }
+
+        .toggle-btn.expanded .arrow {
+            transform: rotate(180deg);
+        }
+
+        /* FILTERS */
+        .filters {
+            background: var(--light-bg);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--secondary);
+            text-transform: uppercase;
+        }
+
+        .filter-group input,
+        .filter-group select {
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 13px;
+            background: white;
+        }
+
+        .clear-filters {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .clear-filters:hover {
+            background: var(--accent);
+        }
+
+        .results-count {
+            font-size: 12px;
+            color: #666;
+            margin-left: auto;
+        }
+
+        /* NO RESULTS */
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .no-results h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: var(--secondary);
+        }
+
+        /* FOOTER */
+        footer {
+            background: var(--secondary);
+            color: white;
+            padding: 40px var(--spacing);
+            margin-top: 60px;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .footer-section h4 {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: var(--accent);
+        }
+
+        .footer-section p {
+            font-size: 13px;
+            line-height: 1.8;
+            opacity: 0.9;
+        }
+
+        .footer-section a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-section a:hover {
+            color: var(--accent);
+        }
+
+        .contact-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: var(--primary);
+            border-radius: 6px;
+            text-decoration: none;
+            color: white;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            width: fit-content;
+        }
+
+        .contact-link:hover {
+            background: var(--accent);
+            transform: translateX(4px);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 20px;
+            margin-top: 30px;
+            text-align: center;
+            font-size: 12px;
+            opacity: 0.8;
+            grid-column: 1 / -1;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            header {
+                padding: 20px var(--spacing);
+            }
+
+            .header-container {
+                flex-direction: column;
+            }
+
+            .search-container {
+                max-width: 100%;
+            }
+
+            .logo {
+                font-size: 24px;
+            }
+
+            .category-title {
+                font-size: 22px;
+            }
+
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+
+            main {
+                padding: 20px var(--spacing);
+            }
+
+            .filters {
+                flex-direction: column;
+            }
+
+            .filter-group {
+                width: 100%;
+                flex-direction: column;
+            }
+
+            .results-count {
+                margin-left: 0;
+                margin-top: 10px;
+            }
+        }
+
+        /* ANIMATIONS */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .product-card {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        /* PRINT STYLES */
+        @media print {
+            header, nav, footer, .filters, .toggle-btn {
+                display: none;
+            }
+
+            .product-details {
+                display: block !important;
+            }
+
+            .products-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+    <div class="header-container">
+        <div class="logo">
+            <div class="logo-icon">📋</div>
+            Medical DLS
+        </div>
+        <div class="search-container">
+            <input 
+                type="text" 
+                id="searchInput" 
+                class="search-input" 
+                placeholder="Buscar producto (ej: jeringa, gasa, catéter...)">
+        </div>
+        <div class="header-info">
+            <span>💰 Precios en USD</span>
+            <span>📞 +58 412 XXXX XXXX</span>
+        </div>
+    </div>
+</header>
+
+<!-- NAVIGATION -->
+<nav>
+    <div class="nav-container" id="navContainer"></div>
+</nav>
+
+<!-- MAIN -->
+<main id="mainContent">
+    <!-- Las categorías se generan aquí con JavaScript -->
+</main>
+
+<!-- FOOTER -->
+<footer>
+    <div class="footer-container">
+        <div class="footer-section">
+            <h4>📍 Ubicación</h4>
+            <p>Medical DLS<br>Insumos Médicos y Quirúrgicos<br>Importación directa</p>
+        </div>
+        <div class="footer-section">
+            <h4>📞 Contacto</h4>
+            <p>Contáctenos para cotizaciones especiales, volumen y disponibilidad de stock.</p>
+            <a href="https://wa.me/58412XXXXXXX" class="contact-link">💬 WhatsApp</a>
+        </div>
+        <div class="footer-section">
+            <h4>📋 Catálogo</h4>
+            <p>243 productos en 12 categorías. Equipos, mobiliario, consumibles, insumos quirúrgicos y más.</p>
+            <a href="#" class="contact-link">📥 Descargar PDF</a>
+        </div>
+        <div class="footer-section">
+            <h4>ℹ️ Información</h4>
+            <p>✓ Precios en dólares efectivo/Zelle<br>✓ Stock sujeto a disponibilidad<br>✓ Documento confidencial<br>✓ Actualizado: 12/04/2026</p>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 Medical DLS - Todos los derechos reservados | by KINGDATA</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // BASE DE DATOS DE PRODUCTOS
+    const productos = {
+        "EQUIPOS MÉDICOS": {
+            "Equipos de Diagnóstico por Imagen": [
+                { id: 1, nombre: "Rayos X KINGDATA", presentacion: "Individual", codigo: "RX-001", icon: "🖼️" },
+                { id: 2, nombre: "Máquina de Ultra Sonido KINGDATA", presentacion: "Individual", codigo: "US-001", icon: "🔊" },
+                { id: 3, nombre: "Endoscopio de Alta Presión Inteligente", presentacion: "Individual", codigo: "END-001", icon: "🔍" }
+            ],
+            "Equipos de Monitoreo y Diagnóstico": [
+                { id: 4, nombre: "Monitor Multiparámetro KINGDATA", presentacion: "Individual", codigo: "MON-001", icon: "📊" },
+                { id: 5, nombre: "Electrocardiograma KINGDATA", presentacion: "Individual", codigo: "ECG-001", icon: "❤️" },
+                { id: 6, nombre: "Electrobisturí KINGDATA", presentacion: "Individual", codigo: "EB-001", icon: "⚡" },
+                { id: 7, nombre: "Desfibrilador Cardíaco KINGDATA", presentacion: "Individual", codigo: "DEF-001", icon: "⚡" }
+            ],
+            "Equipos Respiratorios": [
+                { id: 8, nombre: "Concentrador de 7L Portátil KINGDATA", presentacion: "Individual", codigo: "CONC7-001", icon: "💨" },
+                { id: 9, nombre: "Concentrador de 10L Hospitalario KINGDATA", presentacion: "Individual", codigo: "CONC10-001", icon: "💨" },
+                { id: 10, nombre: "Nebulizador Portátil KINGDATA", presentacion: "Und:1 / Bulto:50 und", codigo: "NEB-PORT", icon: "🌫️" },
+                { id: 11, nombre: "Nebulizador de Compresor KINGDATA", presentacion: "Und:1 / Bulto:30 und", codigo: "NEB-COMP", icon: "🌫️" },
+                { id: 12, nombre: "Nebulizador Hospitalario KINGDATA", presentacion: "Und:1 / Bulto:8 und", codigo: "NEB-HOSP", icon: "🌫️" },
+                { id: 13, nombre: "Aspirador de Gleras KINGDATA", presentacion: "Individual", codigo: "ASP-001", icon: "💨" }
+            ],
+            "Equipos Especializados": [
+                { id: 14, nombre: "Máquina de Anestesia KINGDATA", presentacion: "Individual", codigo: "ANES-001", icon: "💊" },
+                { id: 15, nombre: "Máquina de Ozono KINGDATA", presentacion: "Individual", codigo: "OZON-001", icon: "☁️" },
+                { id: 16, nombre: "Bomba de Infusión (Máquina) KINGDATA", presentacion: "Individual", codigo: "BOMB-001", icon: "💧" },
+                { id: 17, nombre: "Cama de Parto Electrónica KINGDATA", presentacion: "Individual", codigo: "CPART-001", icon: "🛏️" },
+                { id: 18, nombre: "Depilador Láser KINGDATA", presentacion: "Individual", codigo: "LASER-001", icon: "✨" },
+                { id: 19, nombre: "Centrifugador KINGDATA (12 Tubos)", presentacion: "Individual", codigo: "CENT-001", icon: "⚙️" }
+            ]
+        },
+        "MOBILIARIO MÉDICO": {
+            "Camas Hospitalarias": [
+                { id: 20, nombre: "Cama Básica Manual con Colchón Antiescara KINGDATA", presentacion: "Individual", codigo: "CAMA-BAS", icon: "🛏️" },
+                { id: 21, nombre: "Cama Manual Premium KINGDATA", presentacion: "Individual", codigo: "CAMA-PREM", icon: "🛏️" },
+                { id: 22, nombre: "Cama Eléctrica 2 Posiciones KINGDATA", presentacion: "Individual", codigo: "CAMA-E2", icon: "🛏️" },
+                { id: 23, nombre: "Cama Eléctrica 3 Posiciones KINGDATA", presentacion: "Individual", codigo: "CAMA-E3", icon: "🛏️" },
+                { id: 24, nombre: "Cama de Fracturado de Recuperación KINGDATA", presentacion: "Individual", codigo: "CAMA-FRAC", icon: "🛏️" },
+                { id: 25, nombre: "Cuna Hospitalaria KINGDATA", presentacion: "Individual", codigo: "CUNA-001", icon: "👶" }
+            ],
+            "Colchones": [
+                { id: 26, nombre: "Colchón Antiescara KINGDATA", presentacion: "Und:1 / Bulto:6 und", codigo: "COLCH-AE", icon: "🛏️" },
+                { id: 27, nombre: "Colchón Clínico KINGDATA", presentacion: "Individual", codigo: "COLCH-CL", icon: "🛏️" }
+            ],
+            "Sillas Médicas": [
+                { id: 28, nombre: "Silla Ginecológica KINGDATA", presentacion: "Individual", codigo: "SILLA-GIN", icon: "🪑" },
+                { id: 29, nombre: "Silla de Transferencia KINGDATA", presentacion: "Individual", codigo: "SILLA-TRANS", icon: "🪑" },
+                { id: 30, nombre: "Silla de Infusión de Tratamiento KINGDATA", presentacion: "Individual", codigo: "SILLA-INF", icon: "🪑" },
+                { id: 31, nombre: "Silla de Extracción de Sangre KINGDATA", presentacion: "Individual", codigo: "SILLA-SANGREUN", icon: "🪑" },
+                { id: 32, nombre: "Silla de Aluminio de Espera KINGDATA", presentacion: "Individual", codigo: "SILLA-ALUM", icon: "🪑" },
+                { id: 33, nombre: "Silla Odontológica KINGDATA", presentacion: "Individual", codigo: "SILLA-ODONT", icon: "🪑" }
+            ],
+            "Camillas": [
+                { id: 34, nombre: "Camilla de Rescate KINGDATA", presentacion: "Individual", codigo: "CAMILLA-RESC", icon: "🚑" },
+                { id: 35, nombre: "Camilla de Ambulancia KINGDATA", presentacion: "Individual", codigo: "CAMILLA-AMB", icon: "🚑" },
+                { id: 36, nombre: "Camilla de Examinación Plana KINGDATA", presentacion: "Individual", codigo: "CAMILLA-EXAM", icon: "🚑" },
+                { id: 37, nombre: "Camilla de Masajes Portátil KINGDATA", presentacion: "Individual", codigo: "CAMILLA-MAS", icon: "🚑" },
+                { id: 38, nombre: "Camilla de Traslado Plana KINGDATA", presentacion: "Individual", codigo: "CAMILLA-TRAS-P", icon: "🚑" },
+                { id: 39, nombre: "Camilla de Traslado Espaldar Levantable KINGDATA", presentacion: "Individual", codigo: "CAMILLA-TRAS-E", icon: "🚑" }
+            ]
+        },
+        "CONSUMIBLES MÉDICOS": {
+            "Guantes": [
+                { id: 75, nombre: "Guantes de Nitrilo Negro KINGDATA", presentacion: "Caja (100 und)", codigo: "GUANT-NEG", icon: "🧤" },
+                { id: 76, nombre: "Guantes de Nitrilo Azul KINGDATA", presentacion: "Caja (100 und)", codigo: "GUANT-AZ", icon: "🧤" },
+                { id: 77, nombre: "Guantes de Nitrilo Púrpura KINGDATA", presentacion: "Caja (100 und)", codigo: "GUANT-PUR", icon: "🧤" },
+                { id: 78, nombre: "Guantes de Nitrilo Rosa KINGDATA", presentacion: "Caja (100 und)", codigo: "GUANT-ROS", icon: "🧤" },
+                { id: 79, nombre: "Guantes Látex KINGDATA", presentacion: "Caja (100 und)", codigo: "GUANT-LAT", icon: "🧤" },
+                { id: 80, nombre: "Guantes Estériles 7# y 7.5# NULIFE", presentacion: "Caja (50 pares)", codigo: "GUANT-EST", icon: "🧤" }
+            ],
+            "Jeringas": [
+                { id: 81, nombre: "Jeringa 1 CC KINGDATA", presentacion: "Mayor:Bulto / Detal:Caja", codigo: "JER-1CC", icon: "💉" },
+                { id: 82, nombre: "Jeringa 3 CC KINGDATA", presentacion: "Mayor:Bulto / Detal:Caja", codigo: "JER-3CC", icon: "💉" },
+                { id: 83, nombre: "Jeringa 5 CC KINGDATA", presentacion: "Mayor:Bulto / Detal:Caja", codigo: "JER-5CC", icon: "💉" },
+                { id: 84, nombre: "Jeringa 10 CC KINGDATA", presentacion: "Mayor:Bulto / Detal:Caja", codigo: "JER-10CC", icon: "💉" },
+                { id: 85, nombre: "Jeringa 20 CC KINGDATA", presentacion: "Mayor:Bulto / Detal:Caja", codigo: "JER-20CC", icon: "💉" }
+            ],
+            "Gasas y Compresas": [
+                { id: 86, nombre: "Gasa Estéril 4\"x4\" 12 capas KINGDATA", presentacion: "Unidad", codigo: "GASA-4x4", icon: "📦" },
+                { id: 87, nombre: "Gasa 2\"x2\" No Estéril 12 capas KINGDATA", presentacion: "Unidad", codigo: "GASA-2x2", icon: "📦" },
+                { id: 88, nombre: "Gasa Hospitalaria No Estéril x100Y KINGDATA", presentacion: "Unidad", codigo: "GASA-HOSP", icon: "📦" },
+                { id: 89, nombre: "Gasa Estéril 4x4 Caja 25 Sobres ALGOBAP", presentacion: "Unidad", codigo: "GASA-ALG", icon: "📦" }
+            ],
+            "Cateteres (Yelcos)": [
+                { id: 104, nombre: "Yelco 18G KINGDATA", presentacion: "Unidad", codigo: "YELC-18G", icon: "🔌" },
+                { id: 105, nombre: "Yelco 20G KINGDATA", presentacion: "Unidad", codigo: "YELC-20G", icon: "🔌" },
+                { id: 106, nombre: "Yelco 22G KINGDATA", presentacion: "Unidad", codigo: "YELC-22G", icon: "🔌" },
+                { id: 107, nombre: "Yelco 24G KINGDATA", presentacion: "Unidad", codigo: "YELC-24G", icon: "🔌" }
+            ]
+        },
+        "RECUPERACIÓN Y REHABILITACIÓN": {
+            "Sillas de Ruedas": [
+                { id: 53, nombre: "Silla de Rueda Estándar KINGDATA", presentacion: "Individual", codigo: "SR-EST", icon: "♿" },
+                { id: 54, nombre: "Silla de Rueda para Parapléjica Adulto KINGDATA", presentacion: "Individual", codigo: "SR-PARA", icon: "♿" },
+                { id: 55, nombre: "Silla de Rueda Eléctrica KINGDATA", presentacion: "Individual", codigo: "SR-ELEC", icon: "♿" },
+                { id: 56, nombre: "Silla de Rueda de Aluminio KINGDATA", presentacion: "Individual", codigo: "SR-ALUM", icon: "♿" }
+            ],
+            "Andaderas, Muletas y Bastones": [
+                { id: 64, nombre: "Andadera con Silla sin Rueda KINGDATA", presentacion: "Unidad", codigo: "AND-SILL", icon: "🚶" },
+                { id: 65, nombre: "Andadera sin Silla KINGDATA", presentacion: "Unidad", codigo: "AND", icon: "🚶" },
+                { id: 66, nombre: "Muletas por Par KINGDATA", presentacion: "Par", codigo: "MUL-PAR", icon: "🚶" },
+                { id: 68, nombre: "Bastón 4 Puntos KINGDATA", presentacion: "Unidad", codigo: "BAST-4", icon: "🚶" }
+            ]
+        },
+        "SUTURAS QUIRÚRGICAS": {
+            "Sutura Nylon MED-AID": [
+                { id: 149, nombre: "Sutura Nylon MED 4/0-45cm", presentacion: "Unidad", codigo: "SUT-NYL-40", icon: "🧵" },
+                { id: 150, nombre: "Sutura Nylon MED 2.0-45cm", presentacion: "Unidad", codigo: "SUT-NYL-20", icon: "🧵" },
+                { id: 152, nombre: "Sutura Nylon MED 3.0-45cm", presentacion: "Unidad", codigo: "SUT-NYL-30", icon: "🧵" }
+            ],
+            "Sutura Vicryl MED-AID": [
+                { id: 154, nombre: "Sutura Vicryl MED 2.0-75cm", presentacion: "Unidad", codigo: "SUT-VIC-20", icon: "🧵" },
+                { id: 155, nombre: "Sutura Vicryl MED 3.0-70cm", presentacion: "Unidad", codigo: "SUT-VIC-30", icon: "🧵" }
+            ]
+        },
+        "CUIDADO PERSONAL Y SALUD": {
+            "Tensión y Monitoreo": [
+                { id: 177, nombre: "Tensiómetro Manual KINGDATA", presentacion: "Unidad", codigo: "TENS-MAN", icon: "💓" },
+                { id: 178, nombre: "Tensiómetro Digital KINGDATA", presentacion: "Unidad", codigo: "TENS-DIG", icon: "💓" },
+                { id: 180, nombre: "Oxímetro KINGDATA", presentacion: "Unidad", codigo: "OXI-001", icon: "💓" },
+                { id: 181, nombre: "Estetoscopio KINGDATA", presentacion: "Unidad", codigo: "ESTE-001", icon: "🩺" }
+            ],
+            "Glucometría y Laboratorio": [
+                { id: 183, nombre: "Glucómetro con 25 Tiras y 25 Lancetas KINGDATA", presentacion: "Combo", codigo: "GLUC-001", icon: "🩸" },
+                { id: 185, nombre: "Medidor de Hemoglobina KINGDATA", presentacion: "Combo", codigo: "HEM-001", icon: "🩸" }
+            ]
+        },
+        "LÍNEA ODONTOLÓGICA": {
+            "Insumos Odontológicos": [
+                { id: 167, nombre: "Eyector de Saliva DLS", presentacion: "Paquete (100 und)", codigo: "EYECT-SAL", icon: "🦷" },
+                { id: 168, nombre: "Baberos Dentales DLS", presentacion: "Mayor:Bulto / Detal:Paq", codigo: "BAB-DENT", icon: "🦷" },
+                { id: 171, nombre: "Irrigador Bucal KINGDATA", presentacion: "Unidad", codigo: "IRRIG-BUC", icon: "🦷" }
+            ]
+        },
+        "ALCOHOLES, ANTISÉPTICOS Y GELES": {
+            "Alcohol": [
+                { id: 207, nombre: "Alcohol 120 CC ALNA", presentacion: "Unidad", codigo: "ALC-120", icon: "🧴" },
+                { id: 208, nombre: "Alcohol 240 CC ALNA", presentacion: "Unidad", codigo: "ALC-240", icon: "🧴" },
+                { id: 209, nombre: "Alcohol 500 CC ALNA", presentacion: "Unidad", codigo: "ALC-500", icon: "🧴" }
+            ],
+            "Agua Oxigenada": [
+                { id: 212, nombre: "Agua Oxigenada 120 CC ALNA", presentacion: "Unidad", codigo: "AO-120", icon: "🧴" },
+                { id: 213, nombre: "Agua Oxigenada 240 CC ALNA", presentacion: "Unidad", codigo: "AO-240", icon: "🧴" },
+                { id: 214, nombre: "Agua Oxigenada 500 CC ALNA", presentacion: "Unidad", codigo: "AO-500", icon: "🧴" }
+            ]
+        },
+        "LÍNEA ROSPITAL": {
+            "Sondas Foley": [
+                { id: 224, nombre: "Sonda Foley 2 Vías 100% Silicona 14Fr", presentacion: "Unidad", codigo: "SOND-14", icon: "🔌" },
+                { id: 225, nombre: "Sonda Foley 2 Vías 100% Silicona 16Fr", presentacion: "Unidad", codigo: "SOND-16", icon: "🔌" },
+                { id: 226, nombre: "Sonda Foley 2 Vías 100% Silicona 12Fr", presentacion: "Unidad", codigo: "SOND-12", icon: "🔌" }
+            ],
+            "Tubos y Cánulas": [
+                { id: 230, nombre: "Tubo Endotraqueal c/Cuff 6.0", presentacion: "Unidad", codigo: "TUBO-60", icon: "🔌" },
+                { id: 234, nombre: "Cánula de Oxígeno Adulto", presentacion: "Unidad", codigo: "CANUL-OX", icon: "🔌" }
+            ]
+        },
+        "LENCERÍA MÉDICA Y PAPEL": {
+            "Batas y Monos": [
+                { id: 190, nombre: "Bata Cirujano Estéril Ultra KINGDATA XL", presentacion: "Unidad", codigo: "BATA-EST", icon: "👔" },
+                { id: 191, nombre: "Bata Cirujano Estándar con Puño KD MEDICAL", presentacion: "Unidad", codigo: "BATA-STD", icon: "👔" },
+                { id: 193, nombre: "Bata de Paciente KD MEDICAL", presentacion: "Unidad", codigo: "BATA-PAC", icon: "👔" }
+            ]
+        }
+    };
+
+    // RENDERIZAR NAVEGACIÓN
+    function renderNav() {
+        const navContainer = document.getElementById('navContainer');
+        const categories = Object.keys(productos);
+        
+        categories.forEach((cat, index) => {
+            const btn = document.createElement('button');
+            btn.className = 'nav-btn' + (index === 0 ? ' active' : '');
+            btn.textContent = cat;
+            btn.onclick = () => scrollToCategory(cat);
+            navContainer.appendChild(btn);
+        });
+    }
+
+    // SCROLL A CATEGORÍA
+    function scrollToCategory(categoryName) {
+        const section = document.getElementById(`cat-${categoryName}`);
+        if (section) {
+            section.scrollIntoView({ behavior: 'smooth' });
+            updateActiveNav(categoryName);
+        }
+    }
+
+    function updateActiveNav(categoryName) {
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.textContent === categoryName) {
+                btn.classList.add('active');
+            }
+        });
+    }
+
+    // RENDERIZAR CONTENIDO
+    function renderContent() {
+        const mainContent = document.getElementById('mainContent');
+        mainContent.innerHTML = '';
+
+        Object.entries(productos).forEach(([category, subcategories]) => {
+            const categorySection = document.createElement('section');
+            categorySection.className = 'category-section';
+            categorySection.id = `cat-${category}`;
+
+            const categoryTitle = document.createElement('h2');
+            categoryTitle.className = 'category-title';
+            categoryTitle.textContent = category;
+
+            categorySection.appendChild(categoryTitle);
+
+            Object.entries(subcategories).forEach(([subcat, items]) => {
+                const subcatTitle = document.createElement('h3');
+                subcatTitle.className = 'category-subtitle';
+                subcatTitle.textContent = subcat;
+                categorySection.appendChild(subcatTitle);
+
+                const grid = document.createElement('div');
+                grid.className = 'products-grid';
+
+                items.forEach(product => {
+                    const card = createProductCard(product);
+                    grid.appendChild(card);
+                });
+
+                categorySection.appendChild(grid);
+            });
+
+            mainContent.appendChild(categorySection);
+        });
+    }
+
+    // CREAR TARJETA DE PRODUCTO
+    function createProductCard(product) {
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        card.dataset.searchText = product.nombre.toLowerCase();
+
+        card.innerHTML = `
+            <div class="product-header">
+                <div>
+                    <div class="product-code">${product.codigo}</div>
+                    <div class="product-name">${product.nombre}</div>
+                </div>
+                <div class="product-icon">${product.icon}</div>
+            </div>
+            <div class="product-details" id="details-${product.id}">
+                <div class="product-detail-item">
+                    <span class="product-detail-label">Presentación:</span>
+                    <span class="product-detail-value">${product.presentacion}</span>
+                </div>
+            </div>
+            <button class="toggle-btn" onclick="toggleDetails(${product.id})">
+                Ver detalles <span class="arrow">▼</span>
+            </button>
+        `;
+
+        return card;
+    }
+
+    // TOGGLE DETALLES
+    window.toggleDetails = function(productId) {
+        const details = document.getElementById(`details-${productId}`);
+        const btn = event.target.closest('.toggle-btn');
+        
+        details.classList.toggle('show');
+        btn.classList.toggle('expanded');
+    }
+
+    // BÚSQUEDA
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+        const searchTerm = e.target.value.toLowerCase();
+        const cards = document.querySelectorAll('.product-card');
+        let visibleCount = 0;
+
+        cards.forEach(card => {
+            const isMatch = card.dataset.searchText.includes(searchTerm);
+            card.style.display = isMatch ? 'block' : 'none';
+            if (isMatch) visibleCount++;
+        });
+
+        // Mostrar mensaje si no hay resultados
+        const mainContent = document.getElementById('mainContent');
+        let noResults = mainContent.querySelector('.no-results');
+        
+        if (visibleCount === 0 && searchTerm) {
+            if (!noResults) {
+                noResults = document.createElement('div');
+                noResults.className = 'no-results';
+                mainContent.insertAdjacentElement('afterbegin', noResults);
+            }
+            noResults.innerHTML = `<h3>No se encontraron productos</h3><p>Intenta con otro término de búsqueda</p>`;
+        } else if (noResults) {
+            noResults.remove();
+        }
+    });
+
+    // INICIALIZAR
+    window.addEventListener('load', () => {
+        renderNav();
+        renderContent();
+    });
+
+    // ACTUALIZAR NAV AL SCROLL
+    window.addEventListener('scroll', () => {
+        const categories = Object.keys(productos);
+        const currentCategory = categories.find(cat => {
+            const section = document.getElementById(`cat-${cat}`);
+            if (section) {
+                return section.getBoundingClientRect().top <= 250;
+            }
+            return false;
+        });
+        if (currentCategory) {
+            updateActiveNav(currentCategory);
+        }
+    });
+</script>
+
+</body>
+</html>
